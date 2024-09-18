@@ -1,94 +1,67 @@
-# Melanoma Skin Cancer Detection
+# Melanoma Skin Cancer Detection Using CNN
+> To build a CNN based model which can accurately detect melanoma. Melanoma is a type of cancer that can be deadly if not detected early. It accounts for 75% of skin cancer deaths. A solution that can evaluate images and alert dermatologists about the presence of melanoma has the potential to reduce a lot of manual effort needed in diagnosis.
 
-## Abstract
-
-In the realm of cancer, there exist over 200 distinct forms, with melanoma standing out as the most lethal type of skin cancer among them. The diagnostic protocol for melanoma typically initiates with clinical screening, followed by dermoscopic analysis and histopathological examination. Early detection of melanoma skin cancer is pivotal, as it significantly enhances the chances of successful treatment. The initial step in diagnosing melanoma skin cancer involves visually inspecting the affected area of the skin. Dermatologists capture dermatoscopic images of the skin lesions using high-speed cameras, which yield diagnostic accuracies ranging from 65% to 80% for melanoma without supplementary technical assistance. Through further visual assessment by oncologists and dermatoscopic image analysis, the overall predictive accuracy of melanoma diagnosis can be elevated to 75% to 84%. The objective of the project is to construct an automated classification system leveraging image processing techniques to classify skin cancer based on images of skin lesions.
-
-## Problem statement
-
-To build a CNN based model which can accurately detect melanoma. Melanoma is a type of cancer that can be deadly if not detected early. It accounts for 75% of skin cancer deaths. A solution which can evaluate images and alert the dermatologists about the presence of melanoma has the potential to reduce a lot of manual effort needed in diagnosis.
 
 ## Table of Contents
-
-- [General Info](#general-information)
-- [Model Architecture](#model-architecture)
-- [Model Summary](#model-summary)
-- [Model Evaluation](#model-evaluation)
-- [Technologies Used](#technologies-used)
-- [Acknowledgements](#acknowledgements)
-- [Collaborators](#collaborators)
+* [General Info](#general-information)
+* [Technologies Used](#technologies-used)
+* [Conclusions](#conclusions)
+* [Acknowledgements](#acknowledgements)
 
 <!-- You can include any other section that is pertinent to your problem -->
 
 ## General Information
+This project focuses on building a deep learning-based solution to detect melanoma, a dangerous form of skin cancer. Dermatologists use visual examination to detect such conditions, but this process can be automated using image classification models.
 
-The dataset comprises 2357 images depicting malignant and benign oncological conditions, sourced from the International Skin Imaging Collaboration (ISIC). These images were categorized based on the classification provided by ISIC, with each subset containing an equal number of images.
+The business problem addressed is to reduce the manual effort involved in diagnosing melanoma and other skin diseases by providing an automated solution that assists dermatologists in analyzing medical images.
 
-![datasetgraph](./class_distribution.png)
+The dataset used in this project consists of 2357 images of different oncological diseases, including both benign and malignant conditions. The dataset was provided by the International Skin Imaging Collaboration (ISIC).
 
-In order to address the challenge of class imbalance, the Augmentor Python package (https://augmentor.readthedocs.io/en/master/) was employed to augment the dataset. This involved generating additional samples for all classes, ensuring that none of the classes had insufficient representation.
+The images represent the following 9 disease classes:
+1. Actinic keratosis
+2. Basal cell carcinoma
+3. Dermatofibroma
+4. Melanoma
+5. Nevus
+6. Pigmented benign keratosis
+7. Seborrheic keratosis
+8. Squamous cell carcinoma
+9. Vascular lesion
 
-## Pictorial representation of skin types
+<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
 
-![skincancertypes](./skin_cancer_types.png)
+## Conclusions
+- A custom CNN model was built from scratch without using any pre-trained architectures.
+- Initial results showed signs of overfitting/underfitting, highlighting the need for proper data augmentation.
+- The class distribution was imbalanced, with some diseases like melanoma and nevus dominating the dataset, while others had fewer examples.
+- Data augmentation techniques and balancing strategies were used to address both underfitting and class imbalance, leading to improved model performance.
+- The final model trained on augmented and class-balanced data showed better generalization, but further optimization could still improve its accuracy.
 
-The aim of this task is to assign a specific class label to a particular type of skin cancer.
+<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
 
-## Model Architecture
-
-The break down of the final provided CNN architecture step by step:
-
-1. **Data Augmentation**: The `augmentation_data` variable refers to the augmentation techniques applied to the training data. Data augmentation is used to artificially increase the diversity of the training dataset by applying random transformations such as rotation, scaling, and flipping to the images. This helps in improving the generalization capability of the model.
-
-2. **Normalization**: The `Rescaling(1./255)` layer is added to normalize the pixel values of the input images. Normalization typically involves scaling the pixel values to a range between 0 and 1, which helps in stabilizing the training process and speeding up convergence.
-
-3. **Convolutional Layers**: Three convolutional layers are added sequentially using the `Conv2D` function. Each convolutional layer is followed by a rectified linear unit (ReLU) activation function, which introduces non-linearity into the model. The `padding='same'` argument ensures that the spatial dimensions of the feature maps remain the same after convolution. The number within each `Conv2D` layer (16, 32, 64) represents the number of filters or kernels used in each layer, determining the depth of the feature maps.
-
-4. **Pooling Layers**: After each convolutional layer, a max-pooling layer (`MaxPooling2D`) is added to downsample the feature maps, reducing their spatial dimensions while retaining the most important information. Max-pooling helps in reducing computational complexity and controlling overfitting.
-
-5. **Dropout Layer**: A dropout layer (`Dropout`) with a dropout rate of 0.2 is added after the last max-pooling layer. Dropout is a regularization technique used to prevent overfitting by randomly dropping a fraction of the neurons during training.
-
-6. **Flatten Layer**: The `Flatten` layer is added to flatten the 2D feature maps into a 1D vector, preparing the data for input into the fully connected layers.
-
-7. **Fully Connected Layers**: Two fully connected (dense) layers (`Dense`) are added with ReLU activation functions. The first dense layer consists of 128 neurons, and the second dense layer outputs the final classification probabilities for each class label.
-
-8. **Output Layer**: The number of neurons in the output layer is determined by the `target_labels` variable, representing the number of classes in the classification task. The output layer does not have an activation function specified, as it is followed by the loss function during training.
-
-9. **Model Compilation**: The model is compiled using the Adam optimizer (`optimizer='adam'`) and the Sparse Categorical Crossentropy loss function (`loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)`), which is suitable for multi-class classification problems. Additionally, accuracy is chosen as the evaluation metric (`metrics=['accuracy']`).
-
-10. **Training**: The model is trained using the `fit` method with the specified number of epochs (`epochs=50`). The `ModelCheckpoint` and `EarlyStopping` callbacks are employed to monitor the validation accuracy during training. The `ModelCheckpoint` callback saves the model with the best validation accuracy, while the `EarlyStopping` callback stops training if the validation accuracy does not improve for a specified number of epochs (patience=5 in this case). These callbacks help prevent overfitting and ensure that the model converges to the best possible solution.
-
-## Model Summary
-
-![Model Architecture](./model_summary.png)
-
-## Model Evaluation
-
-![Model Evaluation](./model_evaluation.png)
 
 ## Technologies Used
-
-- [Python](https://www.python.org/) - version 3.11.4
+- [Python](https://www.python.org/) - version 3.10.12
 - [Matplotlib](https://matplotlib.org/) - version 3.7.1
-- [Numpy](https://numpy.org/) - version 1.24.3
-- [Pandas](https://pandas.pydata.org/) - version 1.5.3
-- [Seaborn](https://seaborn.pydata.org/) - version 0.12.2
-- [Tensorflow](https://www.tensorflow.org/) - version 2.15.0
+- [Numpy](https://numpy.org/) - version 1.26.4
+- [Keras](https://keras.io/) - version 3.4.1
+- [Augmentor](https://augmentor.readthedocs.io/) - version 0.2.12
+- [Tensorflow](https://www.tensorflow.org/) - version 2.17.0
 
 <!-- As the libraries versions keep on changing, it is recommended to mention the version of library used in this project -->
 
 ## Acknowledgements
+- This project was inspired by the need for automated melanoma detection in dermatology.
+- The dataset was provided by the International Skin Imaging Collaboration (ISIC).
+- The project was based on custom CNN development without using transfer learning models.
 
-- UpGrad tutorials on Convolution Neural Networks (CNNs) on the learning platform
 
-- [Melanoma Skin Cancer](https://www.cancer.org/cancer/melanoma-skin-cancer/about/what-is-melanoma.html)
+## Contact
+Created by [@rohitgotecha] - feel free to contact me!
 
-- [Introduction to CNN](https://www.analyticsvidhya.com/blog/2021/05/convolutional-neural-networks-cnn/)
 
-- [Image classification using CNN](https://www.analyticsvidhya.com/blog/2020/02/learn-image-classification-cnn-convolutional-neural-networks-3-datasets/)
+<!-- Optional -->
+<!-- ## License -->
+<!-- This project is open source and available under the [... License](). -->
 
-- [Efficient way to build CNN architecture](https://towardsdatascience.com/a-guide-to-an-efficient-way-to-build-neural-network-architectures-part-ii-hyper-parameter-42efca01e5d7)
-
-## Collaborators
-
-Created by [@akashkriplani](https://github.com/akashkriplani)
+<!-- You don't have to include all sections - just the one's relevant to your project -->
